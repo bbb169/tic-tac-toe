@@ -3,7 +3,7 @@ import React from 'react';
 import './App.css';
 import { CellButton } from './component/cell-button';
 import { Cell, Directions } from './libs/types';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 
 const players:{ No1: number[], No2: number[] } = { No1: [], No2: [] }
 let currentPlayer: 'No1' | 'No2' =  'No1'
@@ -12,8 +12,10 @@ const cells: Cell[] = Array.from({ length: 9 }, (e, i) => e = { index: i })
 
 function App() {
   const [ cellButtonsDom, setCellButtonsDom ] = React.useState(initButtons())
-  
+  const [messageApi, contextHolder] = message.useMessage()
+
   return <>
+    {contextHolder}
     <div style={cellsBoxStyle()}>
     { cellButtonsDom }
     </div>
@@ -58,6 +60,11 @@ function App() {
       return <CellButton key={i} state={e.O} style={cellButtonStyle} onCellClick={()=>{
         onCellClick(cells,cells[i],()=>{
           setCellButtonsDom(initButtons())
+        }, () => {
+          messageApi.open({
+            type: 'success',
+            content: 'Game Over!',
+          });
         })
       }}/>
     })
@@ -131,13 +138,13 @@ function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
   }
 }
 
-function onCellClick(cells:Cell[], cell:Cell,callBack: ()=> void) {
+function onCellClick(cells:Cell[], cell:Cell,callBack: ()=> void,messageOpen: ()=> void) {
   if (cell.O !== undefined || gameOver) return
 
   cell.O = (currentPlayer === 'No1' ? true : false)
   players[currentPlayer].push(cell.index)
   gameOver = isGameOver(cells, currentPlayer)
-  if (gameOver) console.log('game over')
+  if (gameOver) messageOpen()
   currentPlayer = (currentPlayer === 'No1' ? 'No2' : 'No1')
   callBack()
 }
