@@ -3,18 +3,27 @@ import React from 'react';
 import './App.css';
 import { CellButton } from './component/cell-button';
 import { Cell, Directions } from './libs/types';
+import { Button } from 'antd';
 
 const players:{ No1: number[], No2: number[] } = { No1: [], No2: [] }
 let currentPlayer: 'No1' | 'No2' =  'No1'
 let gameOver = false
+const cells: Cell[] = Array.from({ length: 9 }, (e, i) => e = { index: i })
 
 function App() {
-  const cells:Cell[] = Array.from({length:9},(e,i) => e = { index: i })
   const [ cellButtonsDom, setCellButtonsDom ] = React.useState(initButtons())
   
-  return <div style={cellsBoxStyle()}>
+  return <>
+    <div style={cellsBoxStyle()}>
     { cellButtonsDom }
-  </div>
+    </div>
+    <Button type={'primary'}
+      onClick={() => {
+        goBack(cells, () => {
+        setCellButtonsDom(initButtons())
+      })
+    }}>Go Back</Button>
+  </>
 
   function handlePostion(cell: Cell) {
     const size = { row: 3, columns: 3 } //three rows and three columns 
@@ -43,7 +52,7 @@ function App() {
       fontSize: '100px',
       margin: '0.2%',
     }
-
+    
     return cells.map((e,i)=> {
       handlePostion(cells[i])
       return <CellButton key={i} state={e.O} style={cellButtonStyle} onCellClick={()=>{
@@ -127,8 +136,18 @@ function onCellClick(cells:Cell[], cell:Cell,callBack: ()=> void) {
 
   cell.O = (currentPlayer === 'No1' ? true : false)
   players[currentPlayer].push(cell.index)
-  gameOver = isGameOver(cells,currentPlayer)
+  gameOver = isGameOver(cells, currentPlayer)
+  if (gameOver) console.log('game over')
   currentPlayer = (currentPlayer === 'No1' ? 'No2' : 'No1')
+  callBack()
+}
+
+function goBack(cells: Cell[], callBack: () => void) {
+  gameOver = false
+  currentPlayer = (currentPlayer === 'No1' ? 'No2' : 'No1')
+  const player = players[currentPlayer]
+  cells[player[player.length - 1]].O = undefined
+  player.splice(player.length - 1, 1)
   callBack()
 }
 
