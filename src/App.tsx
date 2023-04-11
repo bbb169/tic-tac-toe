@@ -4,6 +4,9 @@ import './App.css';
 import { CellButton } from './component/cell-button';
 import { Cell } from './libs/types';
 
+const players:{ No1: number[], No2: number[] } = { No1: [], No2: [] }
+let currentPlayer: 'No1' | 'No2' =  'No1'
+
 function App() {
   const cells:Cell[] = Array.from({length:9},(e,i) => e = { index: i })
   const [ cellButtonsDom, setCellButtonsDom ] = React.useState(initButtons())
@@ -87,9 +90,9 @@ function App() {
     return cells.map((e,i)=> {
       cells[i] = { ...cells[i],...handlePostion(e) }
       return <CellButton key={i} state={e.O} style={cellButtonStyle} onCellClick={()=>{
-        console.log(i);
-        cells[i].O = false
-        setCellButtonsDom(initButtons())
+        onCellClick(cells[i],()=>{
+          setCellButtonsDom(initButtons())
+        })
       }}/>
     })
   }
@@ -104,5 +107,12 @@ function App() {
   }
 }
 
+function onCellClick(cell:Cell,callBack: ()=> void) {
+  cell.O = (currentPlayer === 'No1' ? true : false)
+  players[currentPlayer].push(cell.index)
+  currentPlayer = (currentPlayer === 'No1' ? 'No2' : 'No1')
+  callBack()
+  console.log(players)
+}
 
 export default App;
