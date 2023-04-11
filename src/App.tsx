@@ -122,6 +122,8 @@ function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
 }
 
 function onCellClick(cells:Cell[], cell:Cell,callBack: ()=> void) {
+  if (cell.O !== undefined) return
+
   cell.O = (currentPlayer === 'No1' ? true : false)
   players[currentPlayer].push(cell.index)
   console.log(isGameOver(cells,currentPlayer))
