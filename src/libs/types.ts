@@ -6,3 +6,10 @@ export interface Cell {
     top?: Cell
     bottom?: Cell
 }
+
+export enum Directions {
+    T = 'top',
+    R = 'right',
+    B = 'bottom',
+    L = 'left',
+}
