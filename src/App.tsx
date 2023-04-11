@@ -17,65 +17,22 @@ function App() {
   </div>
 
   function handlePostion(cell: Cell) {
-    switch (cell.index) {
-      case 0: {
-        return {
-          right: cells[1],
-          bottom: cells[3]
-        }
-      }
-      case 1: {
-        return {
-          right: cells[2],
-          left: cells[1]
-        }
-      }
-      case 2: {
-        return {
-          left: cells[1],
-          bottom: cells[5]
-        }
-      }
-      case 3: {
-        return {
-          right: cells[4],
-          top: cells[1]
-        }
-      }
-      case 4: {
-        return {
-          right: cells[5],
-          bottom: cells[7],
-          left: cells[3],
-          top: cells[1]
-        }
-      }
-      case 5: {
-        return {
-          left: cells[4],
-          bottom: cells[8],
-          top: cells[3]
-        }
-      }
-      case 6: {
-        return {
-          right: cells[7],
-          top: cells[3]
-        }
-      }
-      case 7: {
-        return {
-          right: cells[8],
-          top: cells[4],
-          left: cells[6]
-        }
-      }
-      case 8: {
-        return {
-          top: cells[5],
-          left: cells[7]
-        }
-      }
+    const size = { row: 3, columns: 3 } //three rows and three columns 
+
+    if ( ( cell.index + 1 ) %size.row !== 1 ) {
+      cell.left = cells[ cell.index - 1 ]
+    }
+
+    if ( ( cell.index + 1 ) %size.row !== 0 ) {
+      cell.right = cells[ cell.index + 1 ]
+    }
+    
+    if ( ( cell.index + 1 ) %size.columns > 1 ) {
+      cell.top = cells[ cell.index - size.row ]
+    }
+
+    if ( ( cell.index + 1 ) <= size.row*(size.columns - 1)  ) {
+      cell.bottom = cells[ cell.index + size.row ]
     }
   }
 
@@ -88,7 +45,7 @@ function App() {
     }
 
     return cells.map((e,i)=> {
-      cells[i] = { ...cells[i],...handlePostion(e) }
+      handlePostion(cells[i])
       return <CellButton key={i} state={e.O} style={cellButtonStyle} onCellClick={()=>{
         onCellClick(cells[i],()=>{
           setCellButtonsDom(initButtons())
