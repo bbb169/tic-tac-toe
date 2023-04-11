@@ -10,7 +10,6 @@ let currentPlayer: 'No1' | 'No2' =  'No1'
 function App() {
   const cells:Cell[] = Array.from({length:9},(e,i) => e = { index: i })
   const [ cellButtonsDom, setCellButtonsDom ] = React.useState(initButtons())
-  console.log(cells);
   
   return <div style={cellsBoxStyle()}>
     { cellButtonsDom }
@@ -76,8 +75,6 @@ function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
   return consecutiveTimes(cells, cells[playerPath[playerPath.length -1]], 1)
 
   function consecutiveTimes(cells: Cell[], checkCell: Cell, times: number, directions?: Directions[]) {
-    console.log(times,passed);
-    
     if (times >= 3) return true
     let enough = false
 
@@ -130,7 +127,6 @@ function onCellClick(cells:Cell[], cell:Cell,callBack: ()=> void) {
   console.log(isGameOver(cells,currentPlayer))
   currentPlayer = (currentPlayer === 'No1' ? 'No2' : 'No1')
   callBack()
-  console.log(players)
 }
 
 export default App;
