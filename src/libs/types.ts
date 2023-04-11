@@ -1,6 +1,6 @@
 export interface Cell {
     index: number
-    O?: boolean
+    O?: boolean //means O or X
     right?: Cell
     left?: Cell
     top?: Cell

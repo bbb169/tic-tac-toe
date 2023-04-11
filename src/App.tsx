@@ -98,43 +98,27 @@ function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
     playerPath.forEach( (e) => { //check whether path is consecutive
       if (e === checkCell.index) return //don't check itself
       if (passed.includes(e)) return //makes its finding not go back
-      if (directions) {
-        if (resolveDirection(checkCell,directions) === cells[e] ) {
-          passed.push(checkCell.index)
-          if (consecutiveTimes(cells, resolveDirection(checkCell,directions), times + 1, directions)) return enough = true
-        }
-        return 
-      }
+      if (directions) return findByDirection(directions,e) //finding way is only need focus one direction
 
       // finding by eight directions
-      if (resolveDirection(checkCell,[Directions.L]) === cells[e] ) {
-        passed.push(checkCell.index)
-        if (consecutiveTimes(cells, resolveDirection(checkCell,[Directions.L]), times + 1, [Directions.L])) return enough = true
-      } else if (resolveDirection(checkCell,[Directions.L,Directions.T]) === cells[e] ) {
-        passed.push(checkCell.index)
-        if (consecutiveTimes(cells, resolveDirection(checkCell,[Directions.L,Directions.T]), times + 1, [Directions.L,Directions.T])) return enough = true
-      } else if (resolveDirection(checkCell,[Directions.L,Directions.B]) === cells[e] ) {
-        passed.push(checkCell.index)
-        if (consecutiveTimes(cells, resolveDirection(checkCell,[Directions.L,Directions.B]), times + 1, [Directions.L,Directions.B])) return enough = true
-      } else if (resolveDirection(checkCell,[Directions.T]) === cells[e] ) {
-        passed.push(checkCell.index)
-        if (consecutiveTimes(cells, resolveDirection(checkCell,[Directions.T]), times + 1, [Directions.T])) return enough = true
-      } else if (resolveDirection(checkCell,[Directions.T,Directions.R]) === cells[e] ) {
-        passed.push(checkCell.index)
-        if (consecutiveTimes(cells, resolveDirection(checkCell,[Directions.T,Directions.R]), times + 1, [Directions.T,Directions.R])) return enough = true
-      } else if (resolveDirection(checkCell,[Directions.R]) === cells[e] ) {
-        passed.push(checkCell.index)
-        if (consecutiveTimes(cells, resolveDirection(checkCell,[Directions.R]), times + 1, [Directions.R])) return enough = true
-      } else if (resolveDirection(checkCell,[Directions.R,Directions.B]) === cells[e] ) {
-        passed.push(checkCell.index)
-        if (consecutiveTimes(cells, resolveDirection(checkCell,[Directions.R,Directions.B]), times + 1, [Directions.R,Directions.B])) return enough = true
-      } else if (resolveDirection(checkCell,[Directions.B]) === cells[e] ) {
-        passed.push(checkCell.index)
-        if (consecutiveTimes(cells, resolveDirection(checkCell,[Directions.B]), times + 1, [Directions.B])) return enough = true
-      } 
+      findByDirection([Directions.L],e)
+      findByDirection([Directions.L,Directions.T],e)
+      findByDirection([Directions.L,Directions.B],e)
+      findByDirection([Directions.T],e)
+      findByDirection([Directions.T,Directions.R],e)
+      findByDirection([Directions.R],e)
+      findByDirection([Directions.R,Directions.B],e)
+      findByDirection([Directions.B],e)
     })
 
     return enough
+
+    function findByDirection(directions: Directions[], e:number) {
+      if (resolveDirection(checkCell,directions) === cells[e] ) {
+        passed.push(checkCell.index)
+        if (consecutiveTimes(cells, resolveDirection(checkCell,directions), times + 1, directions)) return enough = true
+      }
+    }
   }
 }
 
@@ -143,7 +127,8 @@ function onCellClick(cells:Cell[], cell:Cell,callBack: ()=> void,messageOpen: ()
 
   cell.O = (currentPlayer === 'No1' ? true : false)
   players[currentPlayer].push(cell.index)
-  gameOver = isGameOver(cells, currentPlayer)
+
+  gameOver = isGameOver(cells, currentPlayer)//check whether is game over every time
   if (gameOver) messageOpen()
   currentPlayer = (currentPlayer === 'No1' ? 'No2' : 'No1')
   callBack()
@@ -152,6 +137,7 @@ function onCellClick(cells:Cell[], cell:Cell,callBack: ()=> void,messageOpen: ()
 function goBack(cells: Cell[], callBack: () => void) {
   gameOver = false
   currentPlayer = (currentPlayer === 'No1' ? 'No2' : 'No1')
+  // clear current player's last one path
   const player = players[currentPlayer]
   cells[player[player.length - 1]].O = undefined
   player.splice(player.length - 1, 1)
