@@ -6,6 +6,7 @@ import { Cell, Directions } from './libs/types';
 
 const players:{ No1: number[], No2: number[] } = { No1: [], No2: [] }
 let currentPlayer: 'No1' | 'No2' =  'No1'
+let gameOver = false
 
 function App() {
   const cells:Cell[] = Array.from({length:9},(e,i) => e = { index: i })
@@ -122,11 +123,11 @@ function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
 }
 
 function onCellClick(cells:Cell[], cell:Cell,callBack: ()=> void) {
-  if (cell.O !== undefined) return
+  if (cell.O !== undefined || gameOver) return
 
   cell.O = (currentPlayer === 'No1' ? true : false)
   players[currentPlayer].push(cell.index)
-  console.log(isGameOver(cells,currentPlayer))
+  gameOver = isGameOver(cells,currentPlayer)
   currentPlayer = (currentPlayer === 'No1' ? 'No2' : 'No1')
   callBack()
 }
