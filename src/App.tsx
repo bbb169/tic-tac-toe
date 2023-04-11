@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { CellButton } from './component/cell-button';
-import { log } from 'console';
 import { Cell } from './libs/types';
 
 function App() {
