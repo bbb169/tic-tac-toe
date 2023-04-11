@@ -11,5 +11,12 @@ export enum Directions {
     T = 'top',
     R = 'right',
     B = 'bottom',
-    L = 'left',
+    L = 'left'
+}
+
+export enum ReverseDirections {
+    top = 'bottom',
+    right = 'left',
+    bottom = 'top',
+    left = 'right',
 }

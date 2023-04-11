@@ -2,8 +2,9 @@
 import React from 'react';
 import './App.css';
 import { CellButton } from './component/cell-button';
-import { Cell, Directions } from './libs/types';
+import { Cell, Directions, ReverseDirections } from './libs/types';
 import { Button, message } from 'antd';
+import { reverse } from 'dns';
 
 const players:{ No1: number[], No2: number[] } = { No1: [], No2: [] }
 let currentPlayer: 'No1' | 'No2' =  'No1'
@@ -80,10 +81,16 @@ function App() {
   }
 }
 
-function resolveDirection(cell: Cell, directions: Directions[]) {
-  return directions[1] ? 
-  (cell[directions[0]]?.[directions[1]]) as Cell: 
-  cell[directions[0]] as Cell
+function resolveDirection(cell: Cell, directions: Directions[], reverse?: boolean) {
+  let innerDirections = directions
+  if (reverse) innerDirections = directions.map((e) => toReverse(e))
+  
+  return innerDirections[1] ? (cell[innerDirections[0]]?.[innerDirections[1]]) as Cell: cell[innerDirections[0]] as Cell
+  
+  function toReverse(direction: Directions) {
+    const rdirection = ReverseDirections[direction]
+    return rdirection as unknown  as Directions
+  }
 }
 
 function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
@@ -116,7 +123,22 @@ function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
     function findByDirection(directions: Directions[], e:number) {
       if (resolveDirection(checkCell,directions) === cells[e] ) {
         passed.push(checkCell.index)
-        if (consecutiveTimes(cells, resolveDirection(checkCell,directions), times + 1, directions)) return enough = true
+        const totalTimes = oneDirectionTimes(checkCell, directions)+oneDirectionTimes(checkCell, directions, true)
+        if ( totalTimes >= 2 ) return enough = true
+        // if (consecutiveTimes(cells, resolveDirection(checkCell,directions), times + 1, directions)) return enough = true
+      }
+
+      function oneDirectionTimes(checkCell: Cell, directions: Directions[], reverse?: boolean) {
+        const nextCell = resolveDirection(checkCell,directions, reverse)
+        if (!nextCell) return 0
+
+        let times = 0
+
+        if (playerPath.includes(nextCell.index)) {
+          times ++
+          times += oneDirectionTimes(nextCell, directions) 
+        }
+        return times
       }
     }
   }
