@@ -81,9 +81,9 @@ function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
     if (times >= 3) return true
     let enough = false
 
-    playerPath.forEach( (e) => {
-      if (e === checkCell.index) return
-      if (passed.includes(e)) return
+    playerPath.forEach( (e) => { //check whether path is consecutive
+      if (e === checkCell.index) return //don't check itself
+      if (passed.includes(e)) return //makes its finding not go back
       if (directions) {
         if (resolveDirection(checkCell,directions) === cells[e] ) {
           passed.push(checkCell.index)
@@ -92,6 +92,7 @@ function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
         return 
       }
 
+      // finding by eight directions
       if (resolveDirection(checkCell,[Directions.L]) === cells[e] ) {
         passed.push(checkCell.index)
         if (consecutiveTimes(cells, resolveDirection(checkCell,[Directions.L]), times + 1, [Directions.L])) return enough = true
