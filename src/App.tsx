@@ -11,7 +11,7 @@ function App() {
   const [ cellButtonsDom, setCellButtonsDom ] = React.useState(initButtons())
   console.log(cells);
   
-  return <div>
+  return <div style={cellsBoxStyle()}>
     { cellButtonsDom }
   </div>
 
@@ -79,16 +79,30 @@ function App() {
   }
 
   function initButtons() {
+    const cellButtonStyle: React.CSSProperties = {
+      width: '32%',
+      height: '32%',
+      fontSize: '100px',
+      margin: '0.2%',
+    }
+
     return cells.map((e,i)=> {
       cells[i] = { ...cells[i],...handlePostion(e) }
-      return <div key={i} onClick={()=>{
+      return <CellButton key={i} state={e.O} style={cellButtonStyle} onCellClick={()=>{
         console.log(i);
-        cells[i].O = true
+        cells[i].O = false
         setCellButtonsDom(initButtons())
-      }}>
-        <CellButton state={e.O}/>
-      </div>
+      }}/>
     })
+  }
+
+  function cellsBoxStyle():React.CSSProperties {
+    return {
+      display:'flex',
+      flexWrap: 'wrap',
+      width: '80vw',
+      height: '80vh'
+    }
   }
 }
 
