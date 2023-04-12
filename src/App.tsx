@@ -4,7 +4,7 @@ import "./App.css";
 import { CellButton } from "./component/cell-button";
 import { Cell, Directions, ReverseDirections } from "./libs/types";
 import { Button, message } from "antd";
-import { cellButtonStyle } from "./libs/style";
+import { cellButtonStyle, cellsBoxStyle } from "./libs/style";
 
 const players: { No1: number[]; No2: number[] } = { No1: [], No2: [] };
 const cells: Cell[] = Array.from({ length: 9 }, (e, i) => (e = { index: i }));
@@ -19,7 +19,7 @@ function App() {
   return (
     <>
       {contextHolder}
-      <div style={cellsBoxStyle()}>{cellButtonsDom}</div>
+      <div style={cellsBoxStyle}>{cellButtonsDom}</div>
       <Button
         type={"primary"}
         onClick={() => {
@@ -32,27 +32,6 @@ function App() {
       </Button>
     </>
   );
-
-  function handlePostion(cell: Cell) {
-    //make out each cell's nearby cells.
-    const size = { row: 3, columns: 3 }; //three rows and three columns
-
-    if ((cell.index + 1) % size.row !== 1) {
-      cell.left = cells[cell.index - 1];
-    }
-
-    if ((cell.index + 1) % size.row !== 0) {
-      cell.right = cells[cell.index + 1];
-    }
-
-    if ((cell.index + 1) / size.columns > 1) {
-      cell.top = cells[cell.index - size.row];
-    }
-
-    if (cell.index + 1 <= size.row * (size.columns - 1)) {
-      cell.bottom = cells[cell.index + size.row];
-    }
-  }
 
   function initButtons() {
     if (!hadPlaced) {
@@ -87,14 +66,26 @@ function App() {
       );
     });
   }
+}
 
-  function cellsBoxStyle(): React.CSSProperties {
-    return {
-      display: "flex",
-      flexWrap: "wrap",
-      width: "80vw",
-      height: "80vh",
-    };
+function handlePostion(cell: Cell) {
+  //make out each cell's nearby cells.
+  const size = { row: 3, columns: 3 }; //three rows and three columns
+
+  if ((cell.index + 1) % size.row !== 1) {
+    cell.left = cells[cell.index - 1];
+  }
+
+  if ((cell.index + 1) % size.row !== 0) {
+    cell.right = cells[cell.index + 1];
+  }
+
+  if ((cell.index + 1) / size.columns > 1) {
+    cell.top = cells[cell.index - size.row];
+  }
+
+  if (cell.index + 1 <= size.row * (size.columns - 1)) {
+    cell.bottom = cells[cell.index + size.row];
   }
 }
 
