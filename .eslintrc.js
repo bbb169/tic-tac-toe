@@ -1,6 +1,11 @@
 module.exports = {
     parser: "@typescript-eslint/parser",
-    plugins: ["@typescript-eslint"],
+    plugins: ["@typescript-eslint",'react','react-hooks','prettier'],
+    parserOptions: {
+        ecmaVersion: 2018,
+        sourceType: 'module',
+        project: './tsconfig.json', // 添加此项配置，指定项目的 tsconfig.json 路径
+    },
     extends: [
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',

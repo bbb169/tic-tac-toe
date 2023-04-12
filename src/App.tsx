@@ -21,7 +21,7 @@ function App() {
       {contextHolder}
       <div style={cellsBoxStyle}>{cellButtonsDom}</div>
       <Button
-        type={"primary"}
+        type="primary"
         onClick={() => {
           goBack(cells, () => {
             setCellButtonsDom(initButtons());
@@ -44,6 +44,7 @@ function App() {
     return cells.map((e, i) => {
       return (
         <CellButton
+          // eslint-disable-next-line react/no-array-index-key
           key={i}
           state={e.O}
           style={cellButtonStyle}
@@ -55,9 +56,10 @@ function App() {
                 setCellButtonsDom(initButtons());
               },
               () => {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 messageApi.open({
                   type: "success",
-                  content: "Game Over!",
+                  content: "Game Over!"
                 });
               }
             );
@@ -93,10 +95,13 @@ function resolveDirection(
   cell: Cell,
   directions: Directions[],
   reverse?: boolean
-) { //Gives the next cell in the corresponding direction
+) {
+  //Gives the next cell in the corresponding direction
   let innerDirections = directions;
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (reverse) innerDirections = directions.map((e) => toReverse(e));
 
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   return innerDirections[1]
     ? (cell[innerDirections[0]]?.[innerDirections[1]] as Cell)
     : (cell[innerDirections[0]] as Cell);
@@ -121,7 +126,8 @@ function isGameOver(cells: Cell[], currentPlayer: "No1" | "No2") {
     if (times >= 3) return true;
     let enough = false;
 
-    playerPath.forEach((e) => { //check whether path is consecutive
+    playerPath.forEach((e) => {
+      //check whether path is consecutive
       if (e === checkCell.index) return; //don't check itself
       if (passed.includes(e)) return; //makes its finding not go back
       if (directions) return findByDirection(directions, e); //finding way is only need focus one direction
@@ -156,6 +162,7 @@ function isGameOver(cells: Cell[], currentPlayer: "No1" | "No2") {
         reverse?: boolean
       ) {
         const nextCell = resolveDirection(checkCell, directions, reverse);
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         if (!nextCell) return 0;
 
         let times = 0;

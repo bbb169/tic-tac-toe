@@ -26,6 +26,6 @@ export function CellButton({
       type={state === false ? "primary" : "default"}
       style={style}
       onClick={onCellClick}
-    ></Button>
+     />
   );
 }
