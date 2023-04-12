@@ -93,7 +93,7 @@ function resolveDirection(
   cell: Cell,
   directions: Directions[],
   reverse?: boolean
-) {
+) { //Gives the next cell in the corresponding direction
   let innerDirections = directions;
   if (reverse) innerDirections = directions.map((e) => toReverse(e));
 
@@ -121,8 +121,7 @@ function isGameOver(cells: Cell[], currentPlayer: "No1" | "No2") {
     if (times >= 3) return true;
     let enough = false;
 
-    playerPath.forEach((e) => {
-      //check whether path is consecutive
+    playerPath.forEach((e) => { //check whether path is consecutive
       if (e === checkCell.index) return; //don't check itself
       if (passed.includes(e)) return; //makes its finding not go back
       if (directions) return findByDirection(directions, e); //finding way is only need focus one direction
@@ -173,7 +172,7 @@ function isGameOver(cells: Cell[], currentPlayer: "No1" | "No2") {
 function onCellClick(
   cells: Cell[],
   cell: Cell,
-  callBack: () => void,
+  setCellButtonsDom: () => void,
   messageOpen: () => void
 ) {
   if (cell.O !== undefined || gameOver) return;
@@ -184,10 +183,10 @@ function onCellClick(
   gameOver = isGameOver(cells, currentPlayer); //check whether is game over every time
   if (gameOver) messageOpen();
   currentPlayer = currentPlayer === "No1" ? "No2" : "No1";
-  callBack();
+  setCellButtonsDom();
 }
 
-function goBack(cells: Cell[], callBack: () => void) {
+function goBack(cells: Cell[], setCellButtonsDom: () => void) {
   gameOver = false;
   currentPlayer = currentPlayer === "No1" ? "No2" : "No1";
 
@@ -195,7 +194,7 @@ function goBack(cells: Cell[], callBack: () => void) {
   const player = players[currentPlayer];
   cells[player[player.length - 1]].O = undefined;
   player.splice(player.length - 1, 1);
-  callBack();
+  setCellButtonsDom();
 }
 
 export default App;
