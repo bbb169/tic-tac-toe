@@ -4,7 +4,7 @@ import './App.css';
 import { CellButton } from './component/cell-button';
 import { Cell, Directions, ReverseDirections } from './libs/types';
 import { Button, message } from 'antd';
-import { reverse } from 'dns';
+import { cellButtonStyle } from './libs/style';
 
 const players:{ No1: number[], No2: number[] } = { No1: [], No2: [] }
 let currentPlayer: 'No1' | 'No2' =  'No1'
@@ -28,7 +28,7 @@ function App() {
     }}>Go Back</Button>
   </>
 
-  function handlePostion(cell: Cell) {
+  function handlePostion(cell: Cell) { //make out each cell's nearby cells. 
     const size = { row: 3, columns: 3 } //three rows and three columns 
 
     if ( ( cell.index + 1 ) %size.row !== 1 ) {
@@ -49,13 +49,6 @@ function App() {
   }
 
   function initButtons() {
-    const cellButtonStyle: React.CSSProperties = {
-      width: '32%',
-      height: '32%',
-      fontSize: '100px',
-      margin: '0.2%',
-    }
-    
     return cells.map((e,i)=> {
       handlePostion(cells[i])
       return <CellButton key={i} state={e.O} style={cellButtonStyle} onCellClick={()=>{
