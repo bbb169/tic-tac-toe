@@ -199,6 +199,7 @@ function goBack(cells: Cell[], setCellButtonsDom: () => void) {
 
   // clear current player's last one path
   const player = players[currentPlayer];
+  if (!player.length) return
   cells[player[player.length - 1]].O = undefined;
   player.splice(player.length - 1, 1);
   setCellButtonsDom();
