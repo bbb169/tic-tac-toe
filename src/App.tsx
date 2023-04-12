@@ -10,6 +10,7 @@ const players:{ No1: number[], No2: number[] } = { No1: [], No2: [] }
 const cells: Cell[] = Array.from({ length: 9 }, (e, i) => e = { index: i })
 let currentPlayer: 'No1' | 'No2' =  'No1'
 let gameOver = false
+let hadPlaced = false
 
 function App() {
   const [ cellButtonsDom, setCellButtonsDom ] = React.useState(initButtons())
@@ -49,8 +50,14 @@ function App() {
   }
 
   function initButtons() {
+    if (!hadPlaced) {
+      cells.forEach((_,i) => {
+        handlePostion(cells[i])
+      })
+      hadPlaced = true
+    }
+
     return cells.map((e,i)=> {
-      handlePostion(cells[i])
       return <CellButton key={i} state={e.O} style={cellButtonStyle} onCellClick={()=>{
         onCellClick(cells,cells[i],()=>{
           setCellButtonsDom(initButtons())
