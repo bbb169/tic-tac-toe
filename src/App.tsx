@@ -7,9 +7,9 @@ import { Button, message } from 'antd';
 import { cellButtonStyle } from './libs/style';
 
 const players:{ No1: number[], No2: number[] } = { No1: [], No2: [] }
+const cells: Cell[] = Array.from({ length: 9 }, (e, i) => e = { index: i })
 let currentPlayer: 'No1' | 'No2' =  'No1'
 let gameOver = false
-const cells: Cell[] = Array.from({ length: 9 }, (e, i) => e = { index: i })
 
 function App() {
   const [ cellButtonsDom, setCellButtonsDom ] = React.useState(initButtons())
