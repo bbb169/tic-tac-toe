@@ -120,12 +120,13 @@ function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
 
     return enough
 
-    function findByDirection(directions: Directions[], e:number) {
+    function findByDirection(directions: Directions[], e: number) {
+      if (enough) return
+
       if (resolveDirection(checkCell,directions) === cells[e] ) {
         passed.push(checkCell.index)
-        const totalTimes = oneDirectionTimes(checkCell, directions)+oneDirectionTimes(checkCell, directions, true)
+        const totalTimes = oneDirectionTimes(checkCell, directions) + oneDirectionTimes(checkCell, directions, true) // search in two directions
         if ( totalTimes >= 2 ) return enough = true
-        // if (consecutiveTimes(cells, resolveDirection(checkCell,directions), times + 1, directions)) return enough = true
       }
 
       function oneDirectionTimes(checkCell: Cell, directions: Directions[], reverse?: boolean) {
@@ -135,8 +136,7 @@ function isGameOver(cells: Cell[], currentPlayer: 'No1' | 'No2') {
         let times = 0
 
         if (playerPath.includes(nextCell.index)) {
-          times ++
-          times += oneDirectionTimes(nextCell, directions) 
+          times += oneDirectionTimes(nextCell, directions, reverse) + 1 //find next in this direction.
         }
         return times
       }
@@ -159,6 +159,7 @@ function onCellClick(cells:Cell[], cell:Cell,callBack: ()=> void,messageOpen: ()
 function goBack(cells: Cell[], callBack: () => void) {
   gameOver = false
   currentPlayer = (currentPlayer === 'No1' ? 'No2' : 'No1')
+
   // clear current player's last one path
   const player = players[currentPlayer]
   cells[player[player.length - 1]].O = undefined
