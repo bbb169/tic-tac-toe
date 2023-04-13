@@ -3,10 +3,12 @@ import { Button } from "antd";
 import { MinusCircleOutlined, CloseOutlined } from "@ant-design/icons";
 
 export function CellButton({
+  successd,
   state,
   style,
   onCellClick,
 }: {
+  successd?: boolean
   state?: boolean;
   style: React.CSSProperties;
   onCellClick: () => void;
@@ -24,6 +26,7 @@ export function CellButton({
       }
       danger={state as boolean}
       type={state === false ? "primary" : "default"}
+      shape={ (successd ?? false) ? "circle" : "default" }
       style={style}
       onClick={onCellClick}
      />
