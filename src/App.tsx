@@ -47,6 +47,7 @@ function App() {
           // eslint-disable-next-line react/no-array-index-key
           key={i}
           state={e.O}
+          successd={e.successed}
           style={cellButtonStyle}
           onCellClick={() => {
             onCellClick(
@@ -114,8 +115,11 @@ function resolveDirection(
 
 function isGameOver(cells: Cell[], currentPlayer: "No1" | "No2") {
   const playerPath = players[currentPlayer];
-  const passed: number[] = [];
-  return consecutiveTimes(cells, cells[playerPath[playerPath.length - 1]], 1);
+  let passed: number[] = [];
+  return {
+    gameOver: consecutiveTimes(cells, cells[playerPath[playerPath.length - 1]], 1),
+    path: passed
+  };
 
   function consecutiveTimes(
     cells: Cell[],
@@ -129,7 +133,6 @@ function isGameOver(cells: Cell[], currentPlayer: "No1" | "No2") {
     playerPath.forEach((e) => {
       //check whether path is consecutive
       if (e === checkCell.index) return; //don't check itself
-      if (passed.includes(e)) return; //makes its finding not go back
       if (directions) return findByDirection(directions, e); //finding way is only need focus one direction
 
       // finding by eight directions
@@ -148,12 +151,13 @@ function isGameOver(cells: Cell[], currentPlayer: "No1" | "No2") {
     function findByDirection(directions: Directions[], e: number) {
       if (enough) return;
 
+      passed = []
       if (resolveDirection(checkCell, directions) === cells[e]) {
         passed.push(checkCell.index);
         const totalTimes =
           oneDirectionTimes(checkCell, directions) +
           oneDirectionTimes(checkCell, directions, true); // search in two directions
-        if (totalTimes >= 2) return (enough = true);
+        if (totalTimes >= 2) return enough = true
       }
 
       function oneDirectionTimes(
@@ -168,6 +172,7 @@ function isGameOver(cells: Cell[], currentPlayer: "No1" | "No2") {
         let times = 0;
 
         if (playerPath.includes(nextCell.index)) {
+          passed.push(nextCell.index);
           times += oneDirectionTimes(nextCell, directions, reverse) + 1; //find next in this direction.
         }
         return times;
@@ -187,14 +192,21 @@ function onCellClick(
   cell.O = currentPlayer === "No1" ? true : false;
   players[currentPlayer].push(cell.index);
 
-  gameOver = isGameOver(cells, currentPlayer); //check whether is game over every time
-  if (gameOver) messageOpen();
+  const game = isGameOver(cells, currentPlayer); //check whether is game over every time
+  
+  if (game.gameOver) {
+    messageOpen();
+    game.path.forEach(e => {
+      cells[e].successed = true
+    })
+  }
   currentPlayer = currentPlayer === "No1" ? "No2" : "No1";
   setCellButtonsDom();
 }
 
 function goBack(cells: Cell[], setCellButtonsDom: () => void) {
   gameOver = false;
+  cells.forEach(e=>e.successed=false)
   currentPlayer = currentPlayer === "No1" ? "No2" : "No1";
 
   // clear current player's last one path
