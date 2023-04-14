@@ -2,10 +2,6 @@ export interface Cell {
     index: number;
     successed?: boolean;
     isO?: boolean; // means O or X
-    right?: Cell;
-    left?: Cell;
-    top?: Cell;
-    bottom?: Cell;
 }
 
 export enum Directions {

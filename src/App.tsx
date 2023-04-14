@@ -4,14 +4,17 @@ import { CellButton } from './component/cell-button';
 import { Cell, Directions, ReverseDirections } from './libs/types';
 import { Button, message } from 'antd';
 import { cellButtonStyle, cellsBoxStyle } from './libs/style';
+import { getNearCellByDirectionByCells } from './libs/public';
 
 const playersPath: { No1: number[], No2: number[] } = { No1: [], No2: [] }; // No1 means first player in the game, so is No2.
 const cells: Cell[] = Array.from(
     { length: 9 },
     (cell, index) => (cell = { index })
 );
+const getNearCellByDirection = (index: number, direction: Directions) => {
+    return getNearCellByDirectionByCells(cells, index, direction);
+};
 let currentPlayer: 'No1' | 'No2' = 'No1';
-let hadPlaced = false;
 
 function App () {
     const [cellButtonsDom, setCellButtonsDom] = React.useState(initButtons());
@@ -35,13 +38,6 @@ function App () {
     );
 
     function initButtons () {
-        if (!hadPlaced) {
-            cells.forEach((__, index) => {
-                handlePostion(cells[index]);
-            });
-            hadPlaced = true;
-        }
-
         return cells.map((cell, index) => {
             return (
                 <CellButton
@@ -72,39 +68,20 @@ function App () {
     }
 }
 
-function handlePostion (cell: Cell) {
-    // make out each cell's nearby cells.
-    const size = { row: 3, columns: 3 }; // three rows and three columns
-
-    if ((cell.index + 1) % size.row !== 1) {
-        cell.left = cells[cell.index - 1];
-    }
-
-    if ((cell.index + 1) % size.row !== 0) {
-        cell.right = cells[cell.index + 1];
-    }
-
-    if ((cell.index + 1) / size.columns > 1) {
-        cell.top = cells[cell.index - size.row];
-    }
-
-    if (cell.index + 1 <= size.row * (size.columns - 1)) {
-        cell.bottom = cells[cell.index + size.row];
-    }
-}
-
 function resolveDirection (
-    cell: Cell,
+    cellIndex: number,
     directions: Directions[],
     reverse?: boolean
 ) {
     // Gives the next cell in the corresponding direction
     let innerDirections = directions;
     if (reverse) innerDirections = directions.map((direction) => toReverse(direction));
-
     return innerDirections[1]
-        ? (cell[innerDirections[0]]?.[innerDirections[1]] as Cell)
-        : (cell[innerDirections[0]] as Cell);
+        ? (getNearCellByDirection(
+            (getNearCellByDirection(cellIndex, innerDirections[0]) as Cell)?.index,
+            innerDirections[1]
+        ) as Cell) // get diagonal cell which needs two direction to sure.
+        : (getNearCellByDirection(cellIndex, innerDirections[0]) as Cell);
 
     function toReverse (direction: Directions) {
         const rdirection = ReverseDirections[direction];
@@ -149,7 +126,7 @@ function getGameInfo (cells: Cell[], currentPlayer: 'No1' | 'No2') {
             if (enough) return;
 
             passed = [];
-            if (resolveDirection(checkCell, directions) === cells[cellIndex]) {
+            if (resolveDirection(checkCell.index, directions) === cells[cellIndex]) {
                 passed.push(checkCell.index);
                 const totalTimes =
           oneDirectionTimes(checkCell, directions) +
@@ -162,7 +139,7 @@ function getGameInfo (cells: Cell[], currentPlayer: 'No1' | 'No2') {
                 directions: Directions[],
                 reverse?: boolean
             ) {
-                const nextCell = resolveDirection(checkCell, directions, reverse);
+                const nextCell = resolveDirection(checkCell.index, directions, reverse);
                 if (!nextCell) return 0;
 
                 let times = 0;
