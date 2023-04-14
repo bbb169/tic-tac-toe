@@ -14,7 +14,7 @@ const getNearCellByDirectionByCells = (cells: Cell[], index: number, direction: 
     return getNearCellByDirectionByCellsBySize(cells, index, 3, 3, direction);
 };
 
-export function getCellInAllDirectionByCells (
+function getCellInAllDirectionByCells (
     cells: Cell[],
     cellIndex: number,
     directions: Directions[],

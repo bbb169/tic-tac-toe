@@ -14,7 +14,7 @@ const cells: Cell[] = Array.from(
 let currentPlayer: 'No1' | 'No2' = 'No1';
 
 function App () {
-    const [cellButtonsDom, setCellButtonsDom] = React.useState(initButtons());
+    const [cellButtonsDom, updateCellButtonsDom] = React.useState(getButtonsDom());
     const [messageApi, contextHolder] = message.useMessage();
 
     return (
@@ -25,7 +25,7 @@ function App () {
                 type="primary"
                 onClick={() => {
                     goBack(cells, () => {
-                        setCellButtonsDom(initButtons());
+                        updateCellButtonsDom(getButtonsDom());
                     });
                 }}
             >
@@ -34,7 +34,7 @@ function App () {
         </>
     );
 
-    function initButtons () {
+    function getButtonsDom () {
         return cells.map((cell, index) => {
             return (
                 <CellButton
@@ -48,7 +48,7 @@ function App () {
                             cells,
                             cells[index],
                             () => {
-                                setCellButtonsDom(initButtons());
+                                updateCellButtonsDom(getButtonsDom());
                             },
                             () => {
                                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -68,7 +68,7 @@ function App () {
 function onCellClick (
     cells: Cell[],
     cell: Cell,
-    setCellButtonsDom: () => void,
+    updateCellButtonsDom: () => void,
     messageOpen: () => void
 ) {
     if (
@@ -81,17 +81,20 @@ function onCellClick (
 
     const game = getGameInfo(cells, currentPlayer, playersPath); // check whether is game over every time
 
-    if (game.gameOver) {
+    if (game.gameOver) gameOverActions();
+
+    currentPlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
+    updateCellButtonsDom();
+
+    function gameOverActions () {
         messageOpen();
         game.path.forEach((cellIndex) => {
             cells[cellIndex].successed = true;
         });
     }
-    currentPlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
-    setCellButtonsDom();
 }
 
-function goBack (cells: Cell[], setCellButtonsDom: () => void) {
+function goBack (cells: Cell[], updateCellButtonsDom: () => void) {
     cells.forEach((cell) => (cell.successed = false));
     currentPlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
 
@@ -100,7 +103,7 @@ function goBack (cells: Cell[], setCellButtonsDom: () => void) {
     if (!player.length) return;
     cells[player[player.length - 1]].isO = undefined;
     player.splice(player.length - 1, 1);
-    setCellButtonsDom();
+    updateCellButtonsDom();
 }
 
 export default App;
