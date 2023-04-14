@@ -140,14 +140,14 @@ function isGameOver (cells: Cell[], currentPlayer: 'No1' | 'No2') {
             if (directions) return findByDirection(directions, cellIndex); // finding way is only need focus one direction
 
             // finding by eight directions
-            findByDirection([Directions.L], cellIndex);
-            findByDirection([Directions.L, Directions.T], cellIndex);
-            findByDirection([Directions.L, Directions.B], cellIndex);
-            findByDirection([Directions.T], cellIndex);
-            findByDirection([Directions.T, Directions.R], cellIndex);
-            findByDirection([Directions.R], cellIndex);
-            findByDirection([Directions.R, Directions.B], cellIndex);
-            findByDirection([Directions.B], cellIndex);
+            findByDirection([Directions.left], cellIndex);
+            findByDirection([Directions.left, Directions.top], cellIndex);
+            findByDirection([Directions.left, Directions.bottom], cellIndex);
+            findByDirection([Directions.top], cellIndex);
+            findByDirection([Directions.top, Directions.right], cellIndex);
+            findByDirection([Directions.right], cellIndex);
+            findByDirection([Directions.right, Directions.bottom], cellIndex);
+            findByDirection([Directions.bottom], cellIndex);
         });
 
         return enough;

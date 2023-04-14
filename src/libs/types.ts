@@ -9,10 +9,10 @@ export interface Cell {
 }
 
 export enum Directions {
-    T = 'top',
-    R = 'right',
-    B = 'bottom',
-    L = 'left',
+    top  = 'top',
+    right  = 'right',
+    bottom = 'bottom',
+    left  = 'left',
 }
 
 export enum ReverseDirections {
