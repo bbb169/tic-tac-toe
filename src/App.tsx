@@ -5,7 +5,7 @@ import { Cell, Directions, ReverseDirections } from './libs/types';
 import { Button, message } from 'antd';
 import { cellButtonStyle, cellsBoxStyle } from './libs/style';
 
-const players: { No1: number[], No2: number[] } = { No1: [], No2: [] };
+const playersPath: { No1: number[], No2: number[] } = { No1: [], No2: [] }; // No1 means first player in the game, so is No2.
 const cells: Cell[] = Array.from(
     { length: 9 },
     (cell, index) => (cell = { index })
@@ -114,7 +114,7 @@ function resolveDirection (
 }
 
 function isGameOver (cells: Cell[], currentPlayer: 'No1' | 'No2') {
-    const playerPath = players[currentPlayer];
+    const playerPath = playersPath[currentPlayer];
     let passed: number[] = [];
     return {
         gameOver: consecutiveTimes(
@@ -193,7 +193,7 @@ function onCellClick (
     if (cell.isO !== undefined || gameOver) return;
 
     cell.isO = currentPlayer === 'No1';
-    players[currentPlayer].push(cell.index);
+    playersPath[currentPlayer].push(cell.index);
 
     const game = isGameOver(cells, currentPlayer); // check whether is game over every time
 
@@ -213,7 +213,7 @@ function goBack (cells: Cell[], setCellButtonsDom: () => void) {
     currentPlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
 
     // clear current player's last one path
-    const player = players[currentPlayer];
+    const player = playersPath[currentPlayer];
     if (!player.length) return;
     cells[player[player.length - 1]].isO = undefined;
     player.splice(player.length - 1, 1);
