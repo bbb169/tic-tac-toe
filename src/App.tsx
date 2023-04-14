@@ -11,7 +11,6 @@ const cells: Cell[] = Array.from(
     (cell, index) => (cell = { index })
 );
 let currentPlayer: 'No1' | 'No2' = 'No1';
-let gameOver = false;
 let hadPlaced = false;
 
 function App () {
@@ -113,25 +112,19 @@ function resolveDirection (
     }
 }
 
-function isGameOver (cells: Cell[], currentPlayer: 'No1' | 'No2') {
+function getGameInfo (cells: Cell[], currentPlayer: 'No1' | 'No2') {
     const playerPath = playersPath[currentPlayer];
     let passed: number[] = [];
     return {
-        gameOver: consecutiveTimes(
-            cells,
-            cells[playerPath[playerPath.length - 1]],
-            1
-        ),
+        gameOver: consecutiveTimes(cells, cells[playerPath[playerPath.length - 1]]),
         path: passed,
     };
 
     function consecutiveTimes (
         cells: Cell[],
         checkCell: Cell,
-        times: number,
         directions?: Directions[]
     ) {
-        if (times >= 3) return true;
         let enough = false;
 
         playerPath.forEach((cellIndex) => {
@@ -190,12 +183,12 @@ function onCellClick (
     setCellButtonsDom: () => void,
     messageOpen: () => void
 ) {
-    if (cell.isO !== undefined || gameOver) return;
+    if (cell.isO !== undefined || getGameInfo(cells, currentPlayer).gameOver) return;
 
     cell.isO = currentPlayer === 'No1';
     playersPath[currentPlayer].push(cell.index);
 
-    const game = isGameOver(cells, currentPlayer); // check whether is game over every time
+    const game = getGameInfo(cells, currentPlayer); // check whether is game over every time
 
     if (game.gameOver) {
         messageOpen();
@@ -208,7 +201,6 @@ function onCellClick (
 }
 
 function goBack (cells: Cell[], setCellButtonsDom: () => void) {
-    gameOver = false;
     cells.forEach((cell) => (cell.successed = false));
     currentPlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
 
