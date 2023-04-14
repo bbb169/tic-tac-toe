@@ -1,21 +1,76 @@
 import React from 'react';
 import './App.css';
 import { CellButton } from './component/cell-button';
-import { Cell, PlayersPath } from './libs/types';
+import { Cell, Players, PlayersPath } from './libs/types';
 import { Button, message } from 'antd';
 import { cellButtonStyle, cellsBoxStyle } from './libs/style';
 import { getGameInfo } from './libs/public';
 
-const playersPath: PlayersPath = { No1: [], No2: [] }; // No1 means first player in the game, so is No2.
 const cells: Cell[] = Array.from(
     { length: 9 },
     (cell, index) => (cell = { index })
 );
-let currentPlayer: 'No1' | 'No2' = 'No1';
 
 function App () {
+    const [currentPlayer, setCurrentPlayer] = React.useState<Players>('No1');
+    const [playersPath, setPlayerPath] = React.useReducer(playersPathReducer, {
+        No1: [],
+        No2: [],
+    }); // No1 means first player in the game, so is No2.
     const [cellButtonsDom, updateCellButtonsDom] = React.useState(getButtonsDom());
     const [messageApi, contextHolder] = message.useMessage();
+    const onCellClick = React.useCallback(
+        (
+            cells: Cell[],
+            cell: Cell,
+            updateCellButtonsDom: () => void,
+            messageOpen: () => void
+        ) => {
+            if (
+                cell.isO !== undefined ||
+        getGameInfo(cells, currentPlayer, playersPath).gameOver
+            ) return;
+
+            cell.isO = currentPlayer === 'No1';
+            setPlayerPath({ player: currentPlayer, cellIndex: cell.index });
+
+            const game = getGameInfo(cells, currentPlayer, playersPath); // check whether is game over every time
+
+            if (game.gameOver) gameOverActions();
+
+            setCurrentPlayer(currentPlayer === 'No1' ? 'No2' : 'No1');
+            updateCellButtonsDom();
+
+            function gameOverActions () {
+                messageOpen();
+                game.path.forEach((cellIndex) => {
+                    cells[cellIndex].successed = true;
+                });
+            }
+        },
+        [currentPlayer, playersPath]
+    );
+    const goBack = React.useCallback(
+        (cells: Cell[], updateCellButtonsDom: () => void) => {
+            cells.forEach((cell) => (cell.successed = false));
+            setCurrentPlayer(currentPlayer === 'No1' ? 'No2' : 'No1');
+
+            // clear current player's last one path
+            const player = playersPath[currentPlayer];
+            if (!player.length) return;
+            cells[player[player.length - 1]].isO = undefined;
+            player.splice(player.length - 1, 1);
+            updateCellButtonsDom();
+        },
+        [currentPlayer, playersPath]
+    );
+    // eslint-disable-next-line no-console
+    console.log(currentPlayer, cells);
+
+    React.useEffect(() => {
+    // eslint-disable-next-line no-console
+        console.log(currentPlayer);
+    }, [currentPlayer]);
 
     return (
         <>
@@ -65,45 +120,12 @@ function App () {
     }
 }
 
-function onCellClick (
-    cells: Cell[],
-    cell: Cell,
-    updateCellButtonsDom: () => void,
-    messageOpen: () => void
-) {
-    if (
-        cell.isO !== undefined ||
-    getGameInfo(cells, currentPlayer, playersPath).gameOver
-    ) return;
-
-    cell.isO = currentPlayer === 'No1';
-    playersPath[currentPlayer].push(cell.index);
-
-    const game = getGameInfo(cells, currentPlayer, playersPath); // check whether is game over every time
-
-    if (game.gameOver) gameOverActions();
-
-    currentPlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
-    updateCellButtonsDom();
-
-    function gameOverActions () {
-        messageOpen();
-        game.path.forEach((cellIndex) => {
-            cells[cellIndex].successed = true;
-        });
-    }
-}
-
-function goBack (cells: Cell[], updateCellButtonsDom: () => void) {
-    cells.forEach((cell) => (cell.successed = false));
-    currentPlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
-
-    // clear current player's last one path
-    const player = playersPath[currentPlayer];
-    if (!player.length) return;
-    cells[player[player.length - 1]].isO = undefined;
-    player.splice(player.length - 1, 1);
-    updateCellButtonsDom();
+function playersPathReducer (
+    state: PlayersPath,
+    action: { player: 'No1' | 'No2', cellIndex: number }
+): PlayersPath {
+    state[action.player].push(action.cellIndex);
+    return state;
 }
 
 export default App;

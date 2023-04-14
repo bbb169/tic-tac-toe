@@ -22,3 +22,5 @@ export enum ReverseDirections {
     bottom = 'top',
     left = 'right',
 }
+
+export type Players = 'No1' | 'No2'
