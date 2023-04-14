@@ -4,6 +4,11 @@ export interface Cell {
     isO?: boolean; // means O or X
 }
 
+export interface PlayersPath {
+    No1: number[];
+    No2: number[];
+}
+
 export enum Directions {
     top  = 'top',
     right  = 'right',
