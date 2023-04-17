@@ -65,11 +65,10 @@ function App () {
     );
 
     function getButtonsDom () {
-        return cells.map((cell, index) => {
+        return cells.map((cell) => {
             return (
                 <CellButton
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={index}
+                    key={cell.index}
                     cell={cell}
                     style={cellButtonStyle}
                     gameInfo={gameInfo}
