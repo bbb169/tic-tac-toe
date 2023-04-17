@@ -32,12 +32,13 @@ export function GoBackButton ({
     const goBack = React.useCallback(() => {
         cells.forEach((cell) => (cell.successed = false));
         const reversePlayer = getReversePlayer(currentPlayer);
-        setCurrentPlayer(reversePlayer);
 
         // clear pre player's last one path
         const player = playersPath[reversePlayer];
 
         if (!player.length) return;
+
+        setCurrentPlayer(reversePlayer);
         setCells({ index: player[player.length - 1], type: '' });
         setPlayerPath({ player: reversePlayer });
         updateCellButtonsDom(getButtonsDom());
