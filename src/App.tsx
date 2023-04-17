@@ -60,7 +60,8 @@ function App () {
     );
 
     useEffect(() => {
-        const game = getGameInfo(cells, currentPlayer, playersPath); // check whether is game over every time
+        const prePlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
+        const game = getGameInfo(cells, prePlayer, playersPath); // check whether is game over every time
 
         if (game.gameOver) gameOverActions();
 
