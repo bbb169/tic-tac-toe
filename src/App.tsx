@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, { useEffect } from 'react';
 import './App.css';
 import { CellButton } from './component/cell-button';
@@ -15,7 +14,6 @@ function App () {
             (cell, index) => (cell = { index, type: '' } as Cell)
         )
     );
-    // eslint-disable-next-line new-cap
     const [currentPlayer, setCurrentPlayer] = React.useReducer(
         currentPlayerReducer,
         'No1'
@@ -28,7 +26,6 @@ function App () {
     const [messageApi, contextHolder] = message.useMessage();
     const onCellClick = React.useCallback(
         (cells: Cell[], cell: Cell) => {
-            // eslint-disable-next-line no-console
             if (
                 cell.type !== '' ||
         getGameInfo(cells, currentPlayer, playersPath).gameOver
