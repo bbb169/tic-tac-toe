@@ -7,16 +7,13 @@ export function GoBackButton ({
     cells,
     currentPlayer,
     playersPath,
-    getButtonsDom,
     setCells,
     setPlayerPath,
     setCurrentPlayer,
-    updateCellButtonsDom,
 }: {
     cells: Cell[];
     currentPlayer: Players;
     playersPath: PlayersPath;
-    getButtonsDom(): JSX.Element[];
     setCells: React.Dispatch<{
         index: number;
         type?: CellType | undefined;
@@ -27,7 +24,6 @@ export function GoBackButton ({
         cellIndex?: number | undefined;
     }>;
     setCurrentPlayer: React.Dispatch<'No1' | 'No2'>;
-    updateCellButtonsDom: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
 }) {
     const goBack = React.useCallback(() => {
         cells.forEach((cell) => (cell.successed = false));
@@ -41,7 +37,6 @@ export function GoBackButton ({
         setCurrentPlayer(reversePlayer);
         setCells({ index: player[player.length - 1], type: '' });
         setPlayerPath({ player: reversePlayer });
-        updateCellButtonsDom(getButtonsDom());
     }, [currentPlayer]);
 
     return (

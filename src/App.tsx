@@ -36,11 +36,7 @@ function App () {
     const [gameOverMessage, gameOverMessageHolder] = message.useMessage();
 
     useEffect(() => {
-        if (gameInfo.gameOver) gameOverActions();
-
-        updateCellButtonsDom(getButtonsDom());
-
-        function gameOverActions () {
+        if (gameInfo.gameOver) {
             gameOverMessage.open({
                 type: 'success',
                 content: 'Game Over!',
@@ -49,6 +45,8 @@ function App () {
                 cells[cellIndex].successed = true; // give the passed cells of game over
             });
         }
+
+        updateCellButtonsDom(getButtonsDom());
     }, [currentPlayer]);
 
     return (
@@ -59,11 +57,9 @@ function App () {
                 cells={cells}
                 currentPlayer={currentPlayer}
                 playersPath={playersPath}
-                getButtonsDom={getButtonsDom}
                 setCells={setCells}
                 setPlayerPath={setPlayerPath}
                 setCurrentPlayer={setCurrentPlayer}
-                updateCellButtonsDom={updateCellButtonsDom}
             />
         </>
     );
