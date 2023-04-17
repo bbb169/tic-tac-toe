@@ -4,7 +4,7 @@ import { CellButton } from './component/cell-button';
 import { Cell } from './libs/types';
 import { Button, message } from 'antd';
 import { cellButtonStyle, cellsBoxStyle } from './libs/style';
-import { getGameInfo } from './libs/public';
+import { getGameInfo, getReversePlayer } from './libs/public';
 import {
     cellsReducer,
     currentPlayerReducer,
@@ -41,13 +41,13 @@ function App () {
                 type: currentPlayer === 'No1' ? 'O' : 'X',
             });
             setPlayerPath({ player: currentPlayer, cellIndex: cell.index });
-            setCurrentPlayer(currentPlayer === 'No1' ? 'No2' : 'No1');
+            setCurrentPlayer(getReversePlayer(currentPlayer));
         },
         [currentPlayer]
     );
     const goBack = React.useCallback(() => {
         cells.forEach((cell) => (cell.successed = false));
-        const reversePlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
+        const reversePlayer = getReversePlayer(currentPlayer);
         setCurrentPlayer(reversePlayer);
 
         // clear pre player's last one path
@@ -61,7 +61,7 @@ function App () {
 
     useEffect(() => {
     // determine whether is game over every time when currentPlayer changed
-        const prePlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
+        const prePlayer = getReversePlayer(currentPlayer);
         const game = getGameInfo(cells, prePlayer, playersPath); // check whether is game over every time
 
         if (game.gameOver) gameOverActions();

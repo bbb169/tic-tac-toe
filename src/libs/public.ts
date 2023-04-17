@@ -1,4 +1,4 @@
-import { Cell, Directions, PlayersPath, ReverseDirections } from './types';
+import { Cell, Directions, Players, PlayersPath, ReverseDirections } from './types';
 
 function getNearCellByDirectionByCellsBySize (cells:Cell[], index:number, row: number, columns: number, direction: Directions) { // just give four directions
     if ((index + 1) % row !== 1 && direction === Directions.left) return cells[index - 1];
@@ -109,4 +109,8 @@ export function getGameInfo (cells: Cell[], currentPlayer: 'No1' | 'No2', player
             }
         }
     }
+}
+
+export function getReversePlayer (currentPlayer: Players) {
+    return currentPlayer === 'No1' ? 'No2' : 'No1';
 }
