@@ -45,22 +45,19 @@ function App () {
         },
         [currentPlayer]
     );
-    const goBack = React.useCallback(
-        (cells: Cell[], updateCellButtonsDom: () => void) => {
-            cells.forEach((cell) => (cell.successed = false));
-            const reversePlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
-            setCurrentPlayer(reversePlayer);
+    const goBack = React.useCallback(() => {
+        cells.forEach((cell) => (cell.successed = false));
+        const reversePlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
+        setCurrentPlayer(reversePlayer);
 
-            // clear pre player's last one path
-            const player = playersPath[reversePlayer];
+        // clear pre player's last one path
+        const player = playersPath[reversePlayer];
 
-            if (!player.length) return;
-            setCells({ index: player[player.length - 1], type: '' });
-            setPlayerPath({ player: reversePlayer });
-            updateCellButtonsDom();
-        },
-        [currentPlayer]
-    );
+        if (!player.length) return;
+        setCells({ index: player[player.length - 1], type: '' });
+        setPlayerPath({ player: reversePlayer });
+        updateCellButtonsDom(getButtonsDom());
+    }, [currentPlayer]);
 
     useEffect(() => {
     // determine whether is game over every time when currentPlayer changed
@@ -86,14 +83,7 @@ function App () {
         <>
             {gameOverMessageHolder}
             <div style={cellsBoxStyle}>{cellButtonsDom}</div>
-            <Button
-                type="primary"
-                onClick={() => {
-                    goBack(cells, () => {
-                        updateCellButtonsDom(getButtonsDom());
-                    });
-                }}
-            >
+            <Button type="primary" onClick={goBack}>
         Go Back
             </Button>
         </>
