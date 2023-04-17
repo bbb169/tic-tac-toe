@@ -1,7 +1,8 @@
+export type CellType = 'O'|'X'|''
 export interface Cell {
     index: number;
     successed?: boolean;
-    isO?: boolean; // means O or X
+    type: CellType; // means O or X
 }
 
 export interface PlayersPath {
@@ -24,3 +25,4 @@ export enum ReverseDirections {
 }
 
 export type Players = 'No1' | 'No2'
+

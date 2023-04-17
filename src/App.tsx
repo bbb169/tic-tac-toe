@@ -2,17 +2,19 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import { CellButton } from './component/cell-button';
-import { Cell, Players, PlayersPath } from './libs/types';
+import { Cell, CellType, Players, PlayersPath } from './libs/types';
 import { Button, message } from 'antd';
 import { cellButtonStyle, cellsBoxStyle } from './libs/style';
 import { getGameInfo } from './libs/public';
 
-const cells: Cell[] = Array.from(
-    { length: 9 },
-    (cell, index) => (cell = { index })
-);
-
 function App () {
+    const [cells, setCells] = React.useReducer(
+        cellsReducer,
+        Array.from(
+            { length: 9 },
+            (cell, index) => (cell = { index, type: '' } as Cell)
+        )
+    );
     // eslint-disable-next-line new-cap
     const [currentPlayer, setCurrentPlayer] = React.useReducer(
         currentPlayerReducer,
@@ -27,13 +29,15 @@ function App () {
     const onCellClick = React.useCallback(
         (cells: Cell[], cell: Cell) => {
             // eslint-disable-next-line no-console
-            console.log(cell.isO);
+            console.log(cell.type);
             if (
-                cell.isO !== undefined ||
+                cell.type !== '' ||
         getGameInfo(cells, currentPlayer, playersPath).gameOver
             ) return;
-
-            cell.isO = currentPlayer === 'No1';
+            setCells({
+                index: cell.index,
+                type: currentPlayer === 'No1' ? 'O' : 'X',
+            });
             setPlayerPath({ player: currentPlayer, cellIndex: cell.index });
             setCurrentPlayer(currentPlayer === 'No1' ? 'No2' : 'No1');
             console.log(currentPlayer);
@@ -48,7 +52,7 @@ function App () {
             // clear current player's last one path
             const player = playersPath[currentPlayer];
             if (!player.length) return;
-            cells[player[player.length - 1]].isO = undefined;
+            setCells({ index: player[player.length - 1], type: '' });
             setPlayerPath({ player: currentPlayer });
             updateCellButtonsDom();
         },
@@ -98,7 +102,7 @@ function App () {
                 <CellButton
                     // eslint-disable-next-line react/no-array-index-key
                     key={index}
-                    state={cell.isO}
+                    state={cell.type}
                     successd={cell.successed}
                     style={cellButtonStyle}
                     onCellClick={() => {
@@ -108,6 +112,16 @@ function App () {
             );
         });
     }
+}
+
+function cellsReducer (
+    state: Cell[],
+    action: { index: number, type?: CellType, successed?: boolean }
+) {
+    const cell = state[action.index];
+    if (action.type) cell.type = action.type;
+    if (action.successed) cell.successed = action.successed;
+    return state;
 }
 
 function playersPathReducer (
