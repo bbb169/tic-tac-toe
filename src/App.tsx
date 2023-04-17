@@ -47,13 +47,16 @@ function App () {
     const goBack = React.useCallback(
         (cells: Cell[], updateCellButtonsDom: () => void) => {
             cells.forEach((cell) => (cell.successed = false));
-            setCurrentPlayer(currentPlayer === 'No1' ? 'No2' : 'No1');
+            const reversePlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
+            setCurrentPlayer(reversePlayer);
 
-            // clear current player's last one path
-            const player = playersPath[currentPlayer];
+            // clear pre player's last one path
+            const player = playersPath[reversePlayer];
+            console.log(player);
+
             if (!player.length) return;
             setCells({ index: player[player.length - 1], type: '' });
-            setPlayerPath({ player: currentPlayer });
+            setPlayerPath({ player: reversePlayer });
             updateCellButtonsDom();
         },
         [currentPlayer]
@@ -120,7 +123,7 @@ function cellsReducer (
     action: { index: number, type?: CellType, successed?: boolean }
 ) {
     const cell = state[action.index];
-    if (action.type) cell.type = action.type;
+    if (action.type !== undefined) cell.type = action.type;
     if (action.successed) cell.successed = action.successed;
     return state;
 }
@@ -135,6 +138,8 @@ function playersPathReducer (
     } else {
         player.splice(player.length - 1, 1);
     }
+    console.log(state);
+
     return state;
 }
 
