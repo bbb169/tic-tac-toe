@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable no-console */
+import React, { useEffect } from 'react';
 import './App.css';
 import { CellButton } from './component/cell-button';
 import { Cell, Players, PlayersPath } from './libs/types';
@@ -13,7 +14,10 @@ const cells: Cell[] = Array.from(
 
 function App () {
     // eslint-disable-next-line new-cap
-    const currentPlayer = React.useRef<Players>('No1');
+    const [currentPlayer, setCurrentPlayer] = React.useReducer(
+        currentPlayerReducer,
+        'No1'
+    );
     const [playersPath, setPlayerPath] = React.useReducer(playersPathReducer, {
         No1: [],
         No2: [],
@@ -21,50 +25,53 @@ function App () {
     const [cellButtonsDom, updateCellButtonsDom] = React.useState(getButtonsDom());
     const [messageApi, contextHolder] = message.useMessage();
     const onCellClick = React.useCallback(
-        (
-            cells: Cell[],
-            cell: Cell,
-            updateCellButtonsDom: () => void,
-            messageOpen: () => void
-        ) => {
+        (cells: Cell[], cell: Cell) => {
+            // eslint-disable-next-line no-console
+            console.log(cell.isO);
             if (
                 cell.isO !== undefined ||
-        getGameInfo(cells, currentPlayer.current, playersPath).gameOver
+        getGameInfo(cells, currentPlayer, playersPath).gameOver
             ) return;
 
-            cell.isO = currentPlayer.current === 'No1';
-            setPlayerPath({ player: currentPlayer.current, cellIndex: cell.index });
-
-            const game = getGameInfo(cells, currentPlayer.current, playersPath); // check whether is game over every time
-
-            if (game.gameOver) gameOverActions();
-
-            currentPlayer.current = (currentPlayer.current === 'No1' ? 'No2' : 'No1');
-            updateCellButtonsDom();
-
-            function gameOverActions () {
-                messageOpen();
-                game.path.forEach((cellIndex) => {
-                    cells[cellIndex].successed = true;
-                });
-            }
+            cell.isO = currentPlayer === 'No1';
+            setPlayerPath({ player: currentPlayer, cellIndex: cell.index });
+            setCurrentPlayer(currentPlayer === 'No1' ? 'No2' : 'No1');
+            console.log(currentPlayer);
         },
-        [currentPlayer.current, playersPath]
+        [currentPlayer]
     );
     const goBack = React.useCallback(
         (cells: Cell[], updateCellButtonsDom: () => void) => {
             cells.forEach((cell) => (cell.successed = false));
-            currentPlayer.current = (currentPlayer.current === 'No1' ? 'No2' : 'No1');
+            setCurrentPlayer(currentPlayer === 'No1' ? 'No2' : 'No1');
 
             // clear current player's last one path
-            const player = playersPath[currentPlayer.current];
+            const player = playersPath[currentPlayer];
             if (!player.length) return;
             cells[player[player.length - 1]].isO = undefined;
-            setPlayerPath({ player: currentPlayer.current });
+            setPlayerPath({ player: currentPlayer });
             updateCellButtonsDom();
         },
-        [currentPlayer.current, playersPath]
+        [currentPlayer]
     );
+
+    useEffect(() => {
+        const game = getGameInfo(cells, currentPlayer, playersPath); // check whether is game over every time
+
+        if (game.gameOver) gameOverActions();
+
+        updateCellButtonsDom(getButtonsDom());
+
+        function gameOverActions () {
+            messageApi.open({
+                type: 'success',
+                content: 'Game Over!',
+            });
+            game.path.forEach((cellIndex) => {
+                cells[cellIndex].successed = true;
+            });
+        }
+    }, [JSON.stringify(currentPlayer)]);
 
     return (
         <>
@@ -84,6 +91,8 @@ function App () {
     );
 
     function getButtonsDom () {
+        console.log(cells);
+
         return cells.map((cell, index) => {
             return (
                 <CellButton
@@ -93,20 +102,7 @@ function App () {
                     successd={cell.successed}
                     style={cellButtonStyle}
                     onCellClick={() => {
-                        onCellClick(
-                            cells,
-                            cells[index],
-                            () => {
-                                updateCellButtonsDom(getButtonsDom());
-                            },
-                            () => {
-                                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                                messageApi.open({
-                                    type: 'success',
-                                    content: 'Game Over!',
-                                });
-                            }
-                        );
+                        onCellClick(cells, cells[index]);
                     }}
                 />
             );
@@ -125,6 +121,10 @@ function playersPathReducer (
         player.splice(player.length - 1, 1);
     }
     return state;
+}
+
+function currentPlayerReducer (state: Players, action: 'No1' | 'No2'): Players {
+    return action;
 }
 
 export default App;
