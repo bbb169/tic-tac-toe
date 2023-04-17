@@ -34,7 +34,8 @@ function App () {
             if (
                 cell.type !== '' ||
         getGameInfo(cells, currentPlayer, playersPath).gameOver
-            ) return;
+            ) return; // if game over or cell had type 'O' or 'X', do nothing
+
             setCells({
                 index: cell.index,
                 type: currentPlayer === 'No1' ? 'O' : 'X',
@@ -62,6 +63,7 @@ function App () {
     );
 
     useEffect(() => {
+    // determine whether is game over every time when currentPlayer changed
         const prePlayer = currentPlayer === 'No1' ? 'No2' : 'No1';
         const game = getGameInfo(cells, prePlayer, playersPath); // check whether is game over every time
 
@@ -75,7 +77,7 @@ function App () {
                 content: 'Game Over!',
             });
             game.path.forEach((cellIndex) => {
-                cells[cellIndex].successed = true;
+                cells[cellIndex].successed = true; // give the passed cells of game over
             });
         }
     }, [currentPlayer]);
