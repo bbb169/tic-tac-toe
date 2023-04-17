@@ -33,19 +33,6 @@ function App () {
     );
     const [cellButtonsDom, updateCellButtonsDom] = React.useState(getButtonsDom());
     const [gameOverMessage, gameOverMessageHolder] = message.useMessage();
-    const onCellClick = React.useCallback(
-        (cells: Cell[], cell: Cell) => {
-            if (cell.type !== '' || gameInfo.gameOver) return; // if game over or cell had type 'O' or 'X', do nothing
-
-            setCells({
-                index: cell.index,
-                type: currentPlayer === 'No1' ? 'O' : 'X',
-            });
-            setPlayerPath({ player: currentPlayer, cellIndex: cell.index });
-            setCurrentPlayer(getReversePlayer(currentPlayer));
-        },
-        [currentPlayer]
-    );
     const goBack = React.useCallback(() => {
         cells.forEach((cell) => (cell.successed = false));
         const reversePlayer = getReversePlayer(currentPlayer);
@@ -92,12 +79,13 @@ function App () {
                 <CellButton
                     // eslint-disable-next-line react/no-array-index-key
                     key={index}
-                    state={cell.type}
-                    successd={cell.successed}
+                    cell={cell}
                     style={cellButtonStyle}
-                    onCellClick={() => {
-                        onCellClick(cells, cells[index]);
-                    }}
+                    gameInfo={gameInfo}
+                    currentPlayer={currentPlayer}
+                    setCells={setCells}
+                    setCurrentPlayer={setCurrentPlayer}
+                    setPlayerPath={setPlayerPath}
                 />
             );
         });
