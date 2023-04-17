@@ -59,7 +59,7 @@ function App () {
             const player = playersPath[currentPlayer];
             if (!player.length) return;
             cells[player[player.length - 1]].isO = undefined;
-            player.splice(player.length - 1, 1);
+            setPlayerPath({ player: currentPlayer });
             updateCellButtonsDom();
         },
         [currentPlayer, playersPath]
@@ -122,9 +122,14 @@ function App () {
 
 function playersPathReducer (
     state: PlayersPath,
-    action: { player: 'No1' | 'No2', cellIndex: number }
+    action: { player: 'No1' | 'No2', cellIndex?: number }
 ): PlayersPath {
-    state[action.player].push(action.cellIndex);
+    const player = state[action.player];
+    if (action.cellIndex !== undefined) {
+        player.push(action.cellIndex as number);
+    } else {
+        player.splice(player.length - 1, 1);
+    }
     return state;
 }
 
