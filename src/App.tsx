@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import './App.css';
 import { CellButton } from './component/cell-button';
 import { Cell } from './libs/types';
@@ -27,14 +27,15 @@ function App () {
         No1: [],
         No2: [],
     }); // No1 means first player in the game, so is No2.
+    const gameInfo = useMemo(
+        () => getGameInfo(cells, getReversePlayer(currentPlayer), playersPath),
+        [cells, currentPlayer, playersPath]
+    );
     const [cellButtonsDom, updateCellButtonsDom] = React.useState(getButtonsDom());
     const [gameOverMessage, gameOverMessageHolder] = message.useMessage();
     const onCellClick = React.useCallback(
         (cells: Cell[], cell: Cell) => {
-            if (
-                cell.type !== '' ||
-        getGameInfo(cells, currentPlayer, playersPath).gameOver
-            ) return; // if game over or cell had type 'O' or 'X', do nothing
+            if (cell.type !== '' || gameInfo.gameOver) return; // if game over or cell had type 'O' or 'X', do nothing
 
             setCells({
                 index: cell.index,
@@ -60,11 +61,7 @@ function App () {
     }, [currentPlayer]);
 
     useEffect(() => {
-    // determine whether is game over every time when currentPlayer changed
-        const prePlayer = getReversePlayer(currentPlayer);
-        const game = getGameInfo(cells, prePlayer, playersPath); // check whether is game over every time
-
-        if (game.gameOver) gameOverActions();
+        if (gameInfo.gameOver) gameOverActions();
 
         updateCellButtonsDom(getButtonsDom());
 
@@ -73,7 +70,7 @@ function App () {
                 type: 'success',
                 content: 'Game Over!',
             });
-            game.path.forEach((cellIndex) => {
+            gameInfo.path.forEach((cellIndex) => {
                 cells[cellIndex].successed = true; // give the passed cells of game over
             });
         }
