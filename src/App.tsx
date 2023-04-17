@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import './App.css';
 import { CellButton } from './component/cell-button';
 import { Cell } from './libs/types';
-import { Button, message } from 'antd';
+import { message } from 'antd';
 import { cellButtonStyle, cellsBoxStyle } from './libs/style';
 import { getGameInfo, getReversePlayer } from './libs/public';
 import {
@@ -10,6 +10,7 @@ import {
     currentPlayerReducer,
     playersPathReducer,
 } from './libs/reducers';
+import { GoBackButton } from './component/go-back-button';
 
 function App () {
     const [cells, setCells] = React.useReducer(
@@ -33,19 +34,6 @@ function App () {
     );
     const [cellButtonsDom, updateCellButtonsDom] = React.useState(getButtonsDom());
     const [gameOverMessage, gameOverMessageHolder] = message.useMessage();
-    const goBack = React.useCallback(() => {
-        cells.forEach((cell) => (cell.successed = false));
-        const reversePlayer = getReversePlayer(currentPlayer);
-        setCurrentPlayer(reversePlayer);
-
-        // clear pre player's last one path
-        const player = playersPath[reversePlayer];
-
-        if (!player.length) return;
-        setCells({ index: player[player.length - 1], type: '' });
-        setPlayerPath({ player: reversePlayer });
-        updateCellButtonsDom(getButtonsDom());
-    }, [currentPlayer]);
 
     useEffect(() => {
         if (gameInfo.gameOver) gameOverActions();
@@ -67,9 +55,16 @@ function App () {
         <>
             {gameOverMessageHolder}
             <div style={cellsBoxStyle}>{cellButtonsDom}</div>
-            <Button type="primary" onClick={goBack}>
-        Go Back
-            </Button>
+            <GoBackButton
+                cells={cells}
+                currentPlayer={currentPlayer}
+                playersPath={playersPath}
+                getButtonsDom={getButtonsDom}
+                setCells={setCells}
+                setPlayerPath={setPlayerPath}
+                setCurrentPlayer={setCurrentPlayer}
+                updateCellButtonsDom={updateCellButtonsDom}
+            />
         </>
     );
 
