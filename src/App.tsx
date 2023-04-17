@@ -71,7 +71,7 @@ function App () {
                 cells[cellIndex].successed = true;
             });
         }
-    }, [JSON.stringify(currentPlayer)]);
+    }, [currentPlayer]);
 
     return (
         <>
