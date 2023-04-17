@@ -29,7 +29,6 @@ function App () {
     const onCellClick = React.useCallback(
         (cells: Cell[], cell: Cell) => {
             // eslint-disable-next-line no-console
-            console.log(cell.type);
             if (
                 cell.type !== '' ||
         getGameInfo(cells, currentPlayer, playersPath).gameOver
@@ -40,7 +39,6 @@ function App () {
             });
             setPlayerPath({ player: currentPlayer, cellIndex: cell.index });
             setCurrentPlayer(currentPlayer === 'No1' ? 'No2' : 'No1');
-            console.log(currentPlayer);
         },
         [currentPlayer]
     );
@@ -52,7 +50,6 @@ function App () {
 
             // clear pre player's last one path
             const player = playersPath[reversePlayer];
-            console.log(player);
 
             if (!player.length) return;
             setCells({ index: player[player.length - 1], type: '' });
@@ -99,8 +96,6 @@ function App () {
     );
 
     function getButtonsDom () {
-        console.log(cells);
-
         return cells.map((cell, index) => {
             return (
                 <CellButton
@@ -138,7 +133,6 @@ function playersPathReducer (
     } else {
         player.splice(player.length - 1, 1);
     }
-    console.log(state);
 
     return state;
 }
