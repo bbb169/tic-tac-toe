@@ -1,7 +1,7 @@
 export type CellType = 'O'|'X'|''
 export interface Cell {
     index: number;
-    successed?: boolean;
+    successed?: boolean; // means it's the cell in game over path
     type: CellType; // means O or X
 }
 

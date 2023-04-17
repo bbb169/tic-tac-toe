@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import { CellButton } from './component/cell-button';
-import { Cell, CellType, Players, PlayersPath } from './libs/types';
+import { Cell } from './libs/types';
 import { Button, message } from 'antd';
 import { cellButtonStyle, cellsBoxStyle } from './libs/style';
 import { getGameInfo } from './libs/public';
+import {
+    cellsReducer,
+    currentPlayerReducer,
+    playersPathReducer,
+} from './libs/reducers';
 
 function App () {
     const [cells, setCells] = React.useReducer(
@@ -23,7 +28,7 @@ function App () {
         No2: [],
     }); // No1 means first player in the game, so is No2.
     const [cellButtonsDom, updateCellButtonsDom] = React.useState(getButtonsDom());
-    const [messageApi, contextHolder] = message.useMessage();
+    const [gameOverMessage, gameOverMessageHolder] = message.useMessage();
     const onCellClick = React.useCallback(
         (cells: Cell[], cell: Cell) => {
             if (
@@ -65,7 +70,7 @@ function App () {
         updateCellButtonsDom(getButtonsDom());
 
         function gameOverActions () {
-            messageApi.open({
+            gameOverMessage.open({
                 type: 'success',
                 content: 'Game Over!',
             });
@@ -77,7 +82,7 @@ function App () {
 
     return (
         <>
-            {contextHolder}
+            {gameOverMessageHolder}
             <div style={cellsBoxStyle}>{cellButtonsDom}</div>
             <Button
                 type="primary"
@@ -108,34 +113,6 @@ function App () {
             );
         });
     }
-}
-
-function cellsReducer (
-    state: Cell[],
-    action: { index: number, type?: CellType, successed?: boolean }
-) {
-    const cell = state[action.index];
-    if (action.type !== undefined) cell.type = action.type;
-    if (action.successed) cell.successed = action.successed;
-    return state;
-}
-
-function playersPathReducer (
-    state: PlayersPath,
-    action: { player: 'No1' | 'No2', cellIndex?: number }
-): PlayersPath {
-    const player = state[action.player];
-    if (action.cellIndex !== undefined) {
-        player.push(action.cellIndex as number);
-    } else {
-        player.splice(player.length - 1, 1);
-    }
-
-    return state;
-}
-
-function currentPlayerReducer (state: Players, action: 'No1' | 'No2'): Players {
-    return action;
 }
 
 export default App;
