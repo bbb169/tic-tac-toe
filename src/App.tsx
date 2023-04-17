@@ -12,7 +12,8 @@ const cells: Cell[] = Array.from(
 );
 
 function App () {
-    const [currentPlayer, setCurrentPlayer] = React.useState<Players>('No1');
+    // eslint-disable-next-line new-cap
+    const currentPlayer = React.useRef<Players>('No1');
     const [playersPath, setPlayerPath] = React.useReducer(playersPathReducer, {
         No1: [],
         No2: [],
@@ -28,17 +29,17 @@ function App () {
         ) => {
             if (
                 cell.isO !== undefined ||
-        getGameInfo(cells, currentPlayer, playersPath).gameOver
+        getGameInfo(cells, currentPlayer.current, playersPath).gameOver
             ) return;
 
-            cell.isO = currentPlayer === 'No1';
-            setPlayerPath({ player: currentPlayer, cellIndex: cell.index });
+            cell.isO = currentPlayer.current === 'No1';
+            setPlayerPath({ player: currentPlayer.current, cellIndex: cell.index });
 
-            const game = getGameInfo(cells, currentPlayer, playersPath); // check whether is game over every time
+            const game = getGameInfo(cells, currentPlayer.current, playersPath); // check whether is game over every time
 
             if (game.gameOver) gameOverActions();
 
-            setCurrentPlayer(currentPlayer === 'No1' ? 'No2' : 'No1');
+            currentPlayer.current = (currentPlayer.current === 'No1' ? 'No2' : 'No1');
             updateCellButtonsDom();
 
             function gameOverActions () {
@@ -48,29 +49,22 @@ function App () {
                 });
             }
         },
-        [currentPlayer, playersPath]
+        [currentPlayer.current, playersPath]
     );
     const goBack = React.useCallback(
         (cells: Cell[], updateCellButtonsDom: () => void) => {
             cells.forEach((cell) => (cell.successed = false));
-            setCurrentPlayer(currentPlayer === 'No1' ? 'No2' : 'No1');
+            currentPlayer.current = (currentPlayer.current === 'No1' ? 'No2' : 'No1');
 
             // clear current player's last one path
-            const player = playersPath[currentPlayer];
+            const player = playersPath[currentPlayer.current];
             if (!player.length) return;
             cells[player[player.length - 1]].isO = undefined;
-            setPlayerPath({ player: currentPlayer });
+            setPlayerPath({ player: currentPlayer.current });
             updateCellButtonsDom();
         },
-        [currentPlayer, playersPath]
+        [currentPlayer.current, playersPath]
     );
-    // eslint-disable-next-line no-console
-    console.log(currentPlayer, cells);
-
-    React.useEffect(() => {
-    // eslint-disable-next-line no-console
-        console.log(currentPlayer);
-    }, [currentPlayer]);
 
     return (
         <>
